@@ -1,12 +1,12 @@
 import json
 import pandas as pd
-from messaging.Client import Colours, Brands
+from messaging.Client import Rpc
 from utils.AddPagination import pagination, filtering
 
 async def get_all_colour(page:int, limit:int, all_params=dict(), sort_params=dict()):
     # Calling call method to send request (event) and convert the response to python object
-    getColour = json.loads(Colours().call())
-    getBrand = json.loads(Brands().call())
+    getColour = json.loads(Rpc("colour_queue").call())
+    getBrand = json.loads(Rpc("brand_queue").call())
     # Dataframes with inner-join
     colourDF = pd.DataFrame(getColour)
     brandDF =  pd.DataFrame(getBrand)
