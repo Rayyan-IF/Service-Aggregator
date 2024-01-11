@@ -27,6 +27,6 @@ async def get_unit_brand_all(page:int, limit:int,
     }
 
     results, err = await UnitBrandService.get_unit_brand_all(db, page, limit, all_params, sort_params)
-    if results == [] or err != None:
+    if results == [] and err != None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(err))
     return payload_response(200, "Success", results)

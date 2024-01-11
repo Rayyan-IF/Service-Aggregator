@@ -9,7 +9,6 @@ router = APIRouter(tags=["Master : Unit Colour API"], prefix="/api/sales")
 
 @router.get("/unit-colour")
 async def get_unit_colour_list_all(page:int, limit:int,
-                                   brand_code:str|None=None,
                                    colour_code:str|None=None,
                                    colour_commercial_name:str|None=None,
                                    colour_police_name:str|None=None,
@@ -22,7 +21,6 @@ async def get_unit_colour_list_all(page:int, limit:int,
         "colour_code": colour_code,
         "colour_police_name": colour_police_name,
         "colour_commercial_name": colour_commercial_name,
-        "brand_code": brand_code,
         "is_active": is_active
     }
 

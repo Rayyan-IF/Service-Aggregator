@@ -1,36 +1,21 @@
-import sys
 import json
 import pika
-sys.path.append("../../../")
-from sqlalchemy import select
-from sqlalchemy.orm import Session
-from src.core.configs.database import get_database
-from src.core.entities.common.UnitColourEntity import MtrColour
+import requests
 
 connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
 channel = connection.channel()
 channel.queue_declare(queue='colour_queue')
 
-def get_all_colour(db:Session):
-    query_init = select(MtrColour)
-    query_final = db.scalars(query_init).all()
-    result = []
-    for colour in query_final:
-        data_outcome = {
-            "colour_id": colour.colour_id,
-            "brand_id": colour.brand_id,
-            "colour_code": colour.colour_code,
-            "colour_commercial_name": colour.colour_commercial_name,
-            "colour_police_name": colour.colour_police_name,
-            "is_active": colour.is_active,
-        }
-        result.append(data_outcome)
-    serialized = json.dumps(result)
+def get_all_colour(body):
+    pagination = json.loads(body)
+    page, limit = pagination["page"], pagination["limit"]
+    getColour = requests.get(f"http://127.0.0.1:8001/api/sales/unit-colour?page={page}&limit={limit}")
+    colourData = getColour.json()["data"]
+    serialized = json.dumps(colourData, default=str)
     return serialized
 
 def on_request(ch, method, props, body):
-    with get_database() as db:
-        response = get_all_colour(db)
+    response = get_all_colour(body)
     ch.basic_publish(exchange='', routing_key=props.reply_to,
                      properties=pika.BasicProperties(correlation_id = \
                      props.correlation_id), body=response)

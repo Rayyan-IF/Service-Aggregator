@@ -9,11 +9,12 @@ router = APIRouter(tags=["Event Colour"], prefix="/colour")
 
 @router.get("/colour", status_code=200)
 async def get_all_colour(page:int, limit:int, colour_code:str|None=None, colour_commercial_name:str|None=None,
-                         colour_police_name:str|None=None, brand_name:str|None=None, sort_by:str|None=None, sort_of:str|None=None):
+                         colour_police_name:str|None=None, brand_name:str|None=None, is_active:bool|None=None, sort_by:str|None=None, sort_of:str|None=None):
     
     all_params = {
         "brand_name":brand_name,
         "colour_code":colour_code,
+        "is_active_colour":is_active,
         "colour_police_name":colour_police_name,
         "colour_commercial_name":colour_commercial_name,
     }

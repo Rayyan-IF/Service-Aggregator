@@ -28,10 +28,3 @@ async def get_db():
         yield db
     finally:
         db.close()
-
-def get_database():
-    db = Local_Session
-    try:
-        return db
-    finally:
-        db.close()  
