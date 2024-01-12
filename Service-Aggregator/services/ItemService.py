@@ -6,12 +6,13 @@ from utils.AddPagination import filtering
 async def get_all_item(page:int, limit:int, all_params=dict(), sort_params=dict()):
     try:
         # Calling call method to send request (event) and convert the response to python object
-        paginationData = json.dumps({"page": page, "limit": limit})
-        getItem = json.loads(Rpc("item_queue", paginationData).call())
-        getSupplier = json.loads(Rpc("supplier_queue", paginationData).call())
-        # Dataframes with inner-join
+        pagination = json.dumps({"page":page, "limit":limit})
+        getItem = json.loads(Rpc("item_queue", pagination).call())
         itemDF =  pd.DataFrame(getItem)
+        supplierID = json.dumps(itemDF.get("supplier_id").tolist())
+        getSupplier = json.loads(Rpc("supplier_queue", supplierID).call())
         supplierDF = pd.DataFrame(getSupplier)
+        # Dataframes with inner-join
         itemSupplier = pd.merge(itemDF, supplierDF, on='supplier_id', how="inner", suffixes=("_item", "_supplier"))
         # Query filtering with pandas
         filteredDF = filtering(itemSupplier, all_params)
@@ -24,8 +25,7 @@ async def get_all_item(page:int, limit:int, all_params=dict(), sort_params=dict(
             else:
                 filteredDF.sort_values(by=f"{sort_params['sort_by']}", ascending=True, inplace=True)
         # Column selection for the response
-        selectedData  = filteredDF[["item_id", "item_code", "item_name", "item_type", "item_class_code", 
-                                    "item_group_code", "supplier_name", "supplier_code", "is_active_item"]].to_json(orient="records")
+        selectedData  = filteredDF[["item_id", "item_code", "item_name", "item_type", "supplier_id", "supplier_name", "supplier_code", "is_active_item"]].to_json(orient="records")
         finalResult = json.loads(selectedData)
         return finalResult, None
     except Exception as err:

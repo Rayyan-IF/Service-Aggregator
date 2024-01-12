@@ -7,9 +7,11 @@ channel = connection.channel()
 channel.queue_declare(queue='brand_queue')
 
 def get_all_brand(body):
-    pagination = json.loads(body)
-    page, limit = pagination["page"], pagination["limit"]
-    getBrand = requests.get(f"http://127.0.0.1:8002/api/sales/unit-brand?page={page}&limit={limit}")
+    data = json.loads(body)
+    url = "http://localhost:8002/api/sales/brand-multi-id/"
+    for i in data:
+        url += f"{i}%2C"
+    getBrand = requests.get(url)
     brandData = getBrand.json()["data"]
     serialized = json.dumps(brandData, default=str)
     return serialized

@@ -6,12 +6,13 @@ from utils.AddPagination import filtering
 async def get_all_colour(page:int, limit:int, all_params=dict(), sort_params=dict()):
     try:
         # Calling call method to send request (event) and convert the response to python object
-        paginationData = json.dumps({"page": page, "limit": limit})
-        getColour = json.loads(Rpc("colour_queue", paginationData).call())
-        getBrand = json.loads(Rpc("brand_queue", paginationData).call())
-        # Dataframes with inner-join
+        pagination = json.dumps({"page":page, "limit":limit})
+        getColour = json.loads(Rpc("colour_queue", pagination).call())
         colourDF = pd.DataFrame(getColour)
+        brandID = json.dumps(colourDF.get("brand_id").tolist())
+        getBrand = json.loads(Rpc("brand_queue", brandID).call())
         brandDF =  pd.DataFrame(getBrand)
+        # Dataframes with inner-join
         colourBrand = pd.merge(colourDF, brandDF, on='brand_id', how="inner", suffixes=("_colour", "_brand"))
         # Query filtering with pandas
         filteredDF = filtering(colourBrand, all_params)

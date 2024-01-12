@@ -9,7 +9,7 @@ channel.queue_declare(queue='colour_queue')
 def get_all_colour(body):
     pagination = json.loads(body)
     page, limit = pagination["page"], pagination["limit"]
-    getColour = requests.get(f"http://127.0.0.1:8001/api/sales/unit-colour?page={page}&limit={limit}")
+    getColour = requests.get(f"http://localhost:8001/api/sales/unit-colour?page={page}&limit={limit}")
     colourData = getColour.json()["data"]
     serialized = json.dumps(colourData, default=str)
     return serialized

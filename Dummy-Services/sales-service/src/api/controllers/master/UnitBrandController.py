@@ -30,3 +30,10 @@ async def get_unit_brand_all(page:int, limit:int,
     if results == [] and err != None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(err))
     return payload_response(200, "Success", results)
+
+@router.get("/brand-multi-id/{brand_idstr}")
+async def get_brand_multi_id(brand_idstr:str, db:Session=Depends(get_db)):
+    results, err = await UnitBrandService.get_brand_multi_id(db, brand_idstr)
+    if results == None and err != None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(err))
+    return payload_response(200, "Success", results)
